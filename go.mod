@@ -1,4 +1,4 @@
-module github.com/motty93/hamasuchi-tiler-characters-crawler
+module github.com/motty93/hamasushi-tier-characters-crawler
 
 go 1.23
 
