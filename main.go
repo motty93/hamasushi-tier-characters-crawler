@@ -57,7 +57,6 @@ func main() {
 	baseURL, _ := url.Parse(info.URL)
 
 	for _, item := range items {
-		// imgタグのsrcを取得
 		srcAttr, err := item.Attribute("src")
 		if err != nil || srcAttr == nil || *srcAttr == "" {
 			continue
@@ -71,27 +70,16 @@ func main() {
 		}
 		imgURL := baseURL.ResolveReference(relURL).String()
 
-		// 例: relURL.Path == "/assets/menu/img/dessert/pho_sake.png"
-		// ディレクトリとファイル名を分割する
-		dirPath, fileName := path.Split(relURL.Path) // "/assets/menu/img/dessert/", "pho_sake.png"
-
-		// 最後の "/" を除いた上で、最終ディレクトリ名を取得
-		// 例: dirPath = "/assets/menu/img/dessert/", => "dessert"
-		folderName := path.Base(strings.TrimSuffix(dirPath, "/"))
-
-		// 保存先ディレクトリ: 例 downloads/dessert
+		dirPath, fileName := path.Split(relURL.Path)              // "/assets/menu/img/dessert/", "pho_sake.png"
+		folderName := path.Base(strings.TrimSuffix(dirPath, "/")) // "/assets/menu/img/dessert/pho_sake.png", "dessert"
 		subDir := filepath.Join(downloadDir, folderName)
-
 		// フォルダが存在しない場合は作成
 		if err := os.MkdirAll(subDir, 0755); err != nil {
 			fmt.Printf("failed to create dir %s: %v\n", subDir, err)
 			continue
 		}
 
-		// ファイルパスを組み立て
 		localPath := filepath.Join(subDir, fileName)
-
-		// HTTPダウンロード
 		if err := downloadImage(context.Background(), imgURL, localPath); err != nil {
 			fmt.Printf("failed to download %s: %v\n", imgURL, err)
 		} else {
@@ -102,7 +90,6 @@ func main() {
 	fmt.Println("Done.")
 }
 
-// 画像をダウンロードして指定ファイルに保存する関数
 func downloadImage(ctx context.Context, url, filepath string) error {
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
